@@ -41,6 +41,4 @@ cpdef ur_inverse(ur_type, T, q_sols, q6_des):
     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
     q_sols[:, :] = solutions
 
-    print(solutions)
-
     return solution_cnt
