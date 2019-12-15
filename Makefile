@@ -8,6 +8,7 @@ build: ## Build Cython cpp bindings
 
 .PHONY: clean
 clean: ## Remove development and build artifacts
+	rm *.out
 	rm -f .*.swp *.pyc
 	rm -rf __pycache__
 
