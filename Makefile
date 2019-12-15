@@ -4,7 +4,7 @@ help:
 
 .PHONY: build
 build: ## Build Cython cpp bindings
-	CC=gcc-9 python setup.py build_ext --inplace
+	CC=gcc-9 CXX=g++-9 python setup.py build_ext --inplace
 
 .PHONY: clean
 clean: ## Remove development and build artifacts

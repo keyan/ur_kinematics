@@ -11,9 +11,9 @@ ext = Extension(
     language="c++",
     include_dirs=[np.get_include()],
     extra_compile_args=['-fopenmp'],
-    extra_link_args=['-Xpreprocessor -fopenmp -lomp'],
+    extra_link_args=['-fopenmp'],
 )
 
 setup(
-    ext_modules = cythonize(ext),
+    ext_modules = cythonize(ext, language_level='3'),
 )
