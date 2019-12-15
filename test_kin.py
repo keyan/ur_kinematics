@@ -1,3 +1,6 @@
+import multiprocessing
+import time
+
 import numpy as np
 
 from py_ur_kin import *
@@ -102,10 +105,6 @@ class TestForwardNPoses:
         ur_forward_n(ur_type=UR3, joints=joints, poses=pose_solutions)
 
         assert np.allclose(pose_solutions, expected_poses, atol=1e-16)
-
-
-    def test_linear_speedup(self):
-        pass
 
 
 class TestInverseSinglePose:
@@ -263,3 +262,53 @@ class TestInverseNPoses:
 
         assert np.allclose(ik_solutions, expected_solutions, atol=1e-6)
         assert np.array_equal([8, 4], n_sols)
+
+
+class TestParallelBenchmarks:
+    def test_forward(self):
+        last_compute_time = float('inf')
+
+        print('Starting forward benchmark...')
+        for num_threads in range(1, multiprocessing.cpu_count() + 1):
+            set_threads(num_threads)
+
+            start_time = time.time()
+            ur_forward_n(
+                ur_type=UR10,
+                joints=np.random.rand(1000000, 6),
+                poses=np.zeros((1000000, 16), dtype=np.float),
+            )
+            exec_time = time.time() - start_time
+
+            print(
+                f'Thread count: {num_threads},',
+                f'Speedup from last run: ~{round((1 - (exec_time / last_compute_time)) * 100, 2)}%,',
+                f'Time: {exec_time}',
+            )
+            assert exec_time < last_compute_time
+            last_compute_time = exec_time
+
+    def test_inverse(self):
+        last_compute_time = float('inf')
+
+        print('Starting inverse benchmark...')
+        for num_threads in range(1, multiprocessing.cpu_count() + 1):
+            set_threads(num_threads)
+
+            start_time = time.time()
+            ur_inverse_n(
+                ur_type=UR10,
+                T=np.random.rand(1000000, 16),
+                q_sols=np.zeros((1000000, 8, 6)),
+                n_sols=np.zeros((1000000,), dtype=np.int),
+                q6_des=0,
+            )
+            exec_time = time.time() - start_time
+
+            print(
+                f'Thread count: {num_threads},',
+                f'Speedup from last run: ~{round((1 - (exec_time / last_compute_time)) * 100, 2)}%,',
+                f'Time: {exec_time}',
+            )
+            assert exec_time < last_compute_time
+            last_compute_time = exec_time

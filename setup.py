@@ -6,8 +6,8 @@ from Cython.Build import cythonize
 
 
 ext = Extension(
-    "py_ur_kin",
-    ["py_ur_kin.pyx", "ur_kin.cpp"],
+    'py_ur_kin',
+    ['py_ur_kin.pyx', 'ur_kin.cpp'],
     language="c++",
     include_dirs=[np.get_include()],
     extra_compile_args=['-fopenmp'],

@@ -1,6 +1,9 @@
-from cython.parallel import parallel, prange
+#cython: boundscheck=False
+
+from cython.parallel import prange
 import numpy as np
 cimport numpy as np
+cimport openmp
 
 
 cdef extern from "ur_kin.h" namespace "ur_kinematics":
@@ -45,9 +48,17 @@ cpdef void ur_inverse_n(
     """
     Computes inverse kinematics for N joint parameters.
     """
-    cdef int ret
     cdef int i
     cdef int n = T.shape[0]
 
     for i in prange(n, nogil=True):
         n_sols[i] = ur_inverse(ur_type, T[i, :], q_sols[i, :, :], q6_des)
+
+
+cpdef void set_threads(int num_threads):
+    """
+    Only used for benchmarking, allows control of thread count used by OpenMP.
+
+    See https://www.openmp.org/wp-content/uploads/spec30.pdf, section 3.2.1.
+    """
+    openmp.omp_set_num_threads(num_threads)

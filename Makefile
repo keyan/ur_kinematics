@@ -17,4 +17,8 @@ clean: ## Remove development and build artifacts
 
 .PHONY: test
 test: build ## Build Cython bindings and execute tests
-	pytest
+	pytest -k 'not TestParallelBenchmarks'
+
+.PHONY: bench
+bench: build ## Build Cython bindings and execute parallel benchmark tests only
+	pytest -s test_kin.py::TestParallelBenchmarks
