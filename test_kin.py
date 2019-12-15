@@ -49,6 +49,29 @@ class TestForwardSinglePose:
         assert np.allclose(pose_solution, expected_pose, atol=1e-16)
 
 
+class TestForwardNPose:
+    def test_ur3_identical_joints_input(self):
+        expected_poses = np.array([
+            [
+                0., 1., -0., 0.4569,
+                1., 0., 0., 0.19425,
+                0., 0., -1., 0.06655,
+                0., 0., 0., 1.,
+            ],
+            [
+                0., 1., -0., 0.4569,
+                1., 0., 0., 0.19425,
+                0., 0., -1., 0.06655,
+                0., 0., 0., 1.,
+            ],
+        ])
+
+        pose_solutions = np.zeros((2, 16), dtype=np.float)
+        ur_forward_n(ur_type=UR3, joints=np.zeros((2, 6)), poses=pose_solutions)
+
+        assert np.allclose(pose_solutions, expected_poses, atol=1e-16)
+
+
 class TestInverseSinglePose:
     """
     Input pose and expected solutions from compiling/executing ur_kin.cpp directly.
