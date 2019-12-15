@@ -253,8 +253,8 @@ int main(int argc, char* argv[])
   double T [16] = {
             0.455, 0.292, -0.841, 0.866,
             0.540, -0.841, 0.000, 0.214,
-            -0.708, -0.455 -0.540, -0.482,
-            0.000, 0.000, 0.000, 1.000
+            -0.708, -0.455, -0.540, -0.482,
+            0.000, 0.000, 0.000, 1.000,
   };
   // forward(q, T, UR10);
   // for(int i=0;i<4;i++) {
@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
   // }
   double q_sols[8*6];
   int num_sols;
-  num_sols = inverse(T, q_sols, 0, UR5);
+  num_sols = inverse(T, q_sols, 0, UR10);
   printf("Number of solutions: %i\n", num_sols);
   for(int i=0;i<num_sols;i++)
     printf("%1.6f %1.6f %1.6f %1.6f %1.6f %1.6f\n",

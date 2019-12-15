@@ -16,25 +16,7 @@ cpdef void ur_forward(int ur_type, double[::1] joints, double[::1] pose) nogil:
     forward(&joints[0], &pose[0], ur_type)
 
 
-cpdef ur_inverse(ur_type, T, q_sols, q6_des):
-    """
-    Given a single flattened 4x4 pose matrix `T` compute the inverse kinematics
-    solutions giving robot joint parameters. Each solution is 1x6, there are
-    max of 8 solutions, and the solutions are stored in q_sols, which is
-    therefore of size 8x6.
-
-    Returns the actual number of solutions.
-    """
-    cdef double[::1] pose = T
-    cdef double[:, ::1] solutions = q_sols
-
-    solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
-    q_sols[:, :] = solutions
-
-    return solution_cnt
-
-
-cpdef ur_forward_n(int ur_type, double[:, ::1] joints, double[:, ::1] poses):
+cpdef void ur_forward_n(int ur_type, double[:, ::1] joints, double[:, ::1] poses):
     """
     Computes forward poses for N joint positions.
     """
@@ -43,3 +25,29 @@ cpdef ur_forward_n(int ur_type, double[:, ::1] joints, double[:, ::1] poses):
 
     for i in prange(n, nogil=True):
         ur_forward(ur_type, joints[i, :], poses[i, :])
+
+
+cpdef int ur_inverse(
+    int ur_type, double[::1] T, double[:, ::1] q_sols, float q6_des) nogil:
+    """
+    Given a single flattened 4x4 pose matrix `T` compute the inverse kinematics
+    solutions giving robot joint parameters. Each solution is 1x6, there are
+    max of 8 solutions, and the solutions are stored in q_sols, which is
+    therefore of size 8x6.
+
+    Returns the actual number of solutions.
+    """
+    return inverse(&T[0], &q_sols[0, 0], q6_des, ur_type)
+
+
+cpdef void ur_inverse_n(
+    int ur_type, double[:, ::1] T, double[:, :, ::1] q_sols, long[::1] n_sols, float q6_des):
+    """
+    Computes inverse kinematics for N joint parameters.
+    """
+    cdef int ret
+    cdef int i
+    cdef int n = T.shape[0]
+
+    for i in prange(n, nogil=True):
+        n_sols[i] = ur_inverse(ur_type, T[i, :], q_sols[i, :, :], q6_des)
