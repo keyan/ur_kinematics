@@ -249,16 +249,22 @@ using namespace ur_kinematics;
 int main(int argc, char* argv[])
 {
   double q[6] = {0.0, 0.0, 1.0, 0.0, 1.0, 0.0};
-  double* T = new double[16];
-  forward(q, T, UR10);
-  for(int i=0;i<4;i++) {
-    for(int j=i*4;j<(i+1)*4;j++)
-      printf("%1.3f ", T[j]);
-    printf("\n");
-  }
+  // double* T = new double[16];
+  double T [16] = {
+            0.455, 0.292, -0.841, 0.866,
+            0.540, -0.841, 0.000, 0.214,
+            -0.708, -0.455 -0.540, -0.482,
+            0.000, 0.000, 0.000, 1.000
+  };
+  // forward(q, T, UR10);
+  // for(int i=0;i<4;i++) {
+  //   for(int j=i*4;j<(i+1)*4;j++)
+  //     printf("%1.3f ", T[j]);
+  //   printf("\n");
+  // }
   double q_sols[8*6];
   int num_sols;
-  num_sols = inverse(T, q_sols, 0, UR10);
+  num_sols = inverse(T, q_sols, 0, UR5);
   printf("Number of solutions: %i\n", num_sols);
   for(int i=0;i<num_sols;i++)
     printf("%1.6f %1.6f %1.6f %1.6f %1.6f %1.6f\n",

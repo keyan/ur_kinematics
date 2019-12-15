@@ -71,6 +71,36 @@ class TestForwardNPose:
 
         assert np.allclose(pose_solutions, expected_poses, atol=1e-16)
 
+    def test_ur3_diff_joints_input(self):
+        expected_poses = np.array([
+            [
+                0., 1., -0., 0.4569,
+                1., 0., 0., 0.19425,
+                0., 0., -1., 0.06655,
+                0., 0., 0., 1.,
+            ],
+            [
+                -0.30596594, 0.1476573, -0.94052228, 0.0882236,
+                0.66201934, -0.67696042, -0.32164418, 0.22006864,
+                -0.68418947, -0.72105611, 0.10937484, -0.25187121,
+                0., 0., 0., 1.,
+            ],
+        ])
+
+        joints = np.array([
+            [0, 0, 0, 0, 0, 0],
+            [0.37789703, 0.64992169, 0.64684366, 0.3325949,  0.75510405, 0.07019782],
+        ])
+
+        pose_solutions = np.zeros((2, 16), dtype=np.float)
+        ur_forward_n(ur_type=UR3, joints=joints, poses=pose_solutions)
+
+        assert np.allclose(pose_solutions, expected_poses, atol=1e-16)
+
+
+    def test_linear_speedup(self):
+        pass
+
 
 class TestInverseSinglePose:
     """
