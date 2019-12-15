@@ -4,3 +4,4 @@ build/*
 .pytest_cache
 __pycache__
 *.so
+py_ur_kin.cpp

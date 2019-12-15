@@ -4,13 +4,16 @@ help:
 
 .PHONY: build
 build: ## Build Cython cpp bindings
-	python setup.py build_ext --inplace
+	CC=gcc-9 python setup.py build_ext --inplace
 
 .PHONY: clean
 clean: ## Remove development and build artifacts
-	rm *.out
+	rm -f *.out
 	rm -f .*.swp *.pyc
 	rm -rf __pycache__
+	rm -rf build/
+	rm -f *.so
+	rm -f py_ur_kin.cpp
 
 .PHONY: test
 test: build ## Build Cython bindings and execute tests

@@ -1,10 +1,5 @@
 ## Usage
 
-Install python dependencies (ideally in a fresh virtualenv):
-```
-pip install -r requirements.txt
-```
-
 See available make commands:
 ```
 make
@@ -16,6 +11,20 @@ import py_ur_kin
 
 py_ur_kin.ur_forward(...)
 py_ur_kin.ur_inverse(...)
+```
+
+## Dependencies
+
+Python dependencies (ideally in a fresh virtualenv):
+```
+pip install -r requirements.txt
+```
+
+Actually building the bindings was tricky due to OpenMP support. I'd be surprised if it was easy to rebuild, but this worked for me:
+
+```
+brew install gcc-9
+brew install libomp
 ```
 
 ## Design decisions
