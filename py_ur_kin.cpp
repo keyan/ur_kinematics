@@ -1528,13 +1528,6 @@ typedef struct {
 #endif
 
 
-/* Print.proto */
-static int __Pyx_Print(PyObject*, PyObject *, int);
-#if CYTHON_COMPILING_IN_PYPY || PY_MAJOR_VERSION >= 3
-static PyObject* __pyx_print = 0;
-static PyObject* __pyx_print_kwargs = 0;
-#endif
-
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
@@ -1639,9 +1632,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_enum__NPY_TYPES(enum NPY_TYPES value);
 
-/* PrintOne.proto */
-static int __Pyx_PrintOne(PyObject* stream, PyObject *o);
-
 /* CIntFromPy.proto */
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
@@ -1715,8 +1705,6 @@ static PyObject *__pyx_builtin_RuntimeError;
 static PyObject *__pyx_builtin_ImportError;
 static const char __pyx_k_T[] = "T";
 static const char __pyx_k_np[] = "np";
-static const char __pyx_k_end[] = "end";
-static const char __pyx_k_file[] = "file";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_pose[] = "pose";
@@ -1724,7 +1712,6 @@ static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_dtype[] = "dtype";
 static const char __pyx_k_float[] = "float";
 static const char __pyx_k_numpy[] = "numpy";
-static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_import[] = "__import__";
@@ -1755,8 +1742,6 @@ static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_ascontiguousarray;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_dtype;
-static PyObject *__pyx_n_s_end;
-static PyObject *__pyx_n_s_file;
 static PyObject *__pyx_n_s_float;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_joints;
@@ -1769,7 +1754,6 @@ static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_kp_s_numpy_core_multiarray_failed_to;
 static PyObject *__pyx_kp_s_numpy_core_umath_failed_to_impor;
 static PyObject *__pyx_n_s_pose;
-static PyObject *__pyx_n_s_print;
 static PyObject *__pyx_n_s_q6_des;
 static PyObject *__pyx_n_s_q_sols;
 static PyObject *__pyx_n_s_range;
@@ -1806,7 +1790,7 @@ static PyObject *__pyx_tuple__11;
  */
 
 static PyObject *__pyx_pw_9py_ur_kin_1ur_forward(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9py_ur_kin_ur_forward(CYTHON_UNUSED PyObject *__pyx_v_ur_type, PyObject *__pyx_v_joints, PyObject *__pyx_v_pose, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9py_ur_kin_ur_forward(PyObject *__pyx_v_ur_type, PyObject *__pyx_v_joints, PyObject *__pyx_v_pose, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyArrayObject *__pyx_v_q = 0;
   PyArrayObject *__pyx_v_T = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_T;
@@ -1914,7 +1898,7 @@ static PyObject *__pyx_f_9py_ur_kin_ur_forward(CYTHON_UNUSED PyObject *__pyx_v_u
  *         np.ndarray[double, ndim=1, mode='c'] T = np.ascontiguousarray(
  *             np.zeros((16,)), dtype=np.float)             # <<<<<<<<<<<<<<
  * 
- *     forward(&q[0], &T[0])
+ *     forward(&q[0], &T[0], ur_type)
  */
   __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -1955,7 +1939,7 @@ static PyObject *__pyx_f_9py_ur_kin_ur_forward(CYTHON_UNUSED PyObject *__pyx_v_u
  *         np.ndarray[double, ndim=1, mode='c'] T = np.ascontiguousarray(
  *             np.zeros((16,)), dtype=np.float)             # <<<<<<<<<<<<<<
  * 
- *     forward(&q[0], &T[0])
+ *     forward(&q[0], &T[0], ur_type)
  */
   __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
@@ -1996,7 +1980,7 @@ static PyObject *__pyx_f_9py_ur_kin_ur_forward(CYTHON_UNUSED PyObject *__pyx_v_u
   /* "py_ur_kin.pyx":21
  *             np.zeros((16,)), dtype=np.float)
  * 
- *     forward(&q[0], &T[0])             # <<<<<<<<<<<<<<
+ *     forward(&q[0], &T[0], ur_type)             # <<<<<<<<<<<<<<
  * 
  *     pose[:] = T
  */
@@ -2020,10 +2004,11 @@ static PyObject *__pyx_f_9py_ur_kin_ur_forward(CYTHON_UNUSED PyObject *__pyx_v_u
     __Pyx_RaiseBufferIndexError(__pyx_t_9);
     __PYX_ERR(0, 21, __pyx_L1_error)
   }
-  ur_kinematics::forward((&(*__Pyx_BufPtrCContig1d(double *, __pyx_pybuffernd_q.rcbuffer->pybuffer.buf, __pyx_t_8, __pyx_pybuffernd_q.diminfo[0].strides))), (&(*__Pyx_BufPtrCContig1d(double *, __pyx_pybuffernd_T.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_T.diminfo[0].strides))));
+  __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_v_ur_type); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 21, __pyx_L1_error)
+  ur_kinematics::forward((&(*__Pyx_BufPtrCContig1d(double *, __pyx_pybuffernd_q.rcbuffer->pybuffer.buf, __pyx_t_8, __pyx_pybuffernd_q.diminfo[0].strides))), (&(*__Pyx_BufPtrCContig1d(double *, __pyx_pybuffernd_T.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_T.diminfo[0].strides))), __pyx_t_9);
 
   /* "py_ur_kin.pyx":23
- *     forward(&q[0], &T[0])
+ *     forward(&q[0], &T[0], ur_type)
  * 
  *     pose[:] = T             # <<<<<<<<<<<<<<
  * 
@@ -2174,7 +2159,7 @@ static PyObject *__pyx_pf_9py_ur_kin_ur_forward(CYTHON_UNUSED PyObject *__pyx_se
  */
 
 static PyObject *__pyx_pw_9py_ur_kin_3ur_inverse(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_9py_ur_kin_ur_inverse(CYTHON_UNUSED PyObject *__pyx_v_ur_type, PyObject *__pyx_v_T, PyObject *__pyx_v_q_sols, CYTHON_UNUSED PyObject *__pyx_v_q6_des, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_9py_ur_kin_ur_inverse(PyObject *__pyx_v_ur_type, PyObject *__pyx_v_T, PyObject *__pyx_v_q_sols, CYTHON_UNUSED PyObject *__pyx_v_q6_des, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyArrayObject *__pyx_v_pose = 0;
   PyArrayObject *__pyx_v_solutions = 0;
   int __pyx_v_solution_cnt;
@@ -2284,7 +2269,7 @@ static PyObject *__pyx_f_9py_ur_kin_ur_inverse(CYTHON_UNUSED PyObject *__pyx_v_u
  *         np.ndarray[double, ndim=2, mode='c'] solutions = np.ascontiguousarray(
  *             np.zeros((8, 6)), dtype=np.float)             # <<<<<<<<<<<<<<
  * 
- *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
+ *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
  */
   __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -2325,7 +2310,7 @@ static PyObject *__pyx_f_9py_ur_kin_ur_inverse(CYTHON_UNUSED PyObject *__pyx_v_u
  *         np.ndarray[double, ndim=2, mode='c'] solutions = np.ascontiguousarray(
  *             np.zeros((8, 6)), dtype=np.float)             # <<<<<<<<<<<<<<
  * 
- *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
+ *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
  */
   __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
@@ -2366,7 +2351,7 @@ static PyObject *__pyx_f_9py_ur_kin_ur_inverse(CYTHON_UNUSED PyObject *__pyx_v_u
   /* "py_ur_kin.pyx":41
  *             np.zeros((8, 6)), dtype=np.float)
  * 
- *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)             # <<<<<<<<<<<<<<
+ *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)             # <<<<<<<<<<<<<<
  *     q_sols[:, :] = solutions
  * 
  */
@@ -2395,33 +2380,25 @@ static PyObject *__pyx_f_9py_ur_kin_ur_inverse(CYTHON_UNUSED PyObject *__pyx_v_u
     __Pyx_RaiseBufferIndexError(__pyx_t_9);
     __PYX_ERR(0, 41, __pyx_L1_error)
   }
-  __pyx_v_solution_cnt = ur_kinematics::inverse((&(*__Pyx_BufPtrCContig1d(double *, __pyx_pybuffernd_pose.rcbuffer->pybuffer.buf, __pyx_t_8, __pyx_pybuffernd_pose.diminfo[0].strides))), (&(*__Pyx_BufPtrCContig2d(double *, __pyx_pybuffernd_solutions.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_solutions.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_solutions.diminfo[1].strides))), 0.0);
+  __pyx_t_9 = __Pyx_PyInt_As_int(__pyx_v_ur_type); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_v_solution_cnt = ur_kinematics::inverse((&(*__Pyx_BufPtrCContig1d(double *, __pyx_pybuffernd_pose.rcbuffer->pybuffer.buf, __pyx_t_8, __pyx_pybuffernd_pose.diminfo[0].strides))), (&(*__Pyx_BufPtrCContig2d(double *, __pyx_pybuffernd_solutions.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_solutions.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_solutions.diminfo[1].strides))), 0.0, __pyx_t_9);
 
   /* "py_ur_kin.pyx":42
  * 
- *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
+ *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
  *     q_sols[:, :] = solutions             # <<<<<<<<<<<<<<
  * 
- *     print(solutions)
+ *     return solution_cnt
  */
   if (unlikely(PyObject_SetItem(__pyx_v_q_sols, __pyx_tuple__4, ((PyObject *)__pyx_v_solutions)) < 0)) __PYX_ERR(0, 42, __pyx_L1_error)
 
   /* "py_ur_kin.pyx":44
  *     q_sols[:, :] = solutions
  * 
- *     print(solutions)             # <<<<<<<<<<<<<<
- * 
- *     return solution_cnt
- */
-  if (__Pyx_PrintOne(0, ((PyObject *)__pyx_v_solutions)) < 0) __PYX_ERR(0, 44, __pyx_L1_error)
-
-  /* "py_ur_kin.pyx":46
- *     print(solutions)
- * 
  *     return solution_cnt             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_solution_cnt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_solution_cnt); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_r = __pyx_t_4;
   __pyx_t_4 = 0;
@@ -5046,8 +5023,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_ascontiguousarray, __pyx_k_ascontiguousarray, sizeof(__pyx_k_ascontiguousarray), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
-  {&__pyx_n_s_end, __pyx_k_end, sizeof(__pyx_k_end), 0, 0, 1, 1},
-  {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
   {&__pyx_n_s_float, __pyx_k_float, sizeof(__pyx_k_float), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_joints, __pyx_k_joints, sizeof(__pyx_k_joints), 0, 0, 1, 1},
@@ -5060,7 +5035,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_numpy_core_multiarray_failed_to, __pyx_k_numpy_core_multiarray_failed_to, sizeof(__pyx_k_numpy_core_multiarray_failed_to), 0, 0, 1, 0},
   {&__pyx_kp_s_numpy_core_umath_failed_to_impor, __pyx_k_numpy_core_umath_failed_to_impor, sizeof(__pyx_k_numpy_core_umath_failed_to_impor), 0, 0, 1, 0},
   {&__pyx_n_s_pose, __pyx_k_pose, sizeof(__pyx_k_pose), 0, 0, 1, 1},
-  {&__pyx_n_s_print, __pyx_k_print, sizeof(__pyx_k_print), 0, 0, 1, 1},
   {&__pyx_n_s_q6_des, __pyx_k_q6_des, sizeof(__pyx_k_q6_des), 0, 0, 1, 1},
   {&__pyx_n_s_q_sols, __pyx_k_q_sols, sizeof(__pyx_k_q_sols), 0, 0, 1, 1},
   {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
@@ -5089,14 +5063,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         np.ndarray[double, ndim=1, mode='c'] T = np.ascontiguousarray(
  *             np.zeros((16,)), dtype=np.float)             # <<<<<<<<<<<<<<
  * 
- *     forward(&q[0], &T[0])
+ *     forward(&q[0], &T[0], ur_type)
  */
   __pyx_tuple_ = PyTuple_Pack(1, __pyx_int_16); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
   /* "py_ur_kin.pyx":23
- *     forward(&q[0], &T[0])
+ *     forward(&q[0], &T[0], ur_type)
  * 
  *     pose[:] = T             # <<<<<<<<<<<<<<
  * 
@@ -5111,7 +5085,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         np.ndarray[double, ndim=2, mode='c'] solutions = np.ascontiguousarray(
  *             np.zeros((8, 6)), dtype=np.float)             # <<<<<<<<<<<<<<
  * 
- *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
+ *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
  */
   __pyx_tuple__3 = PyTuple_Pack(2, __pyx_int_8, __pyx_int_6); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
@@ -5119,10 +5093,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 
   /* "py_ur_kin.pyx":42
  * 
- *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
+ *     solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
  *     q_sols[:, :] = solutions             # <<<<<<<<<<<<<<
  * 
- *     print(solutions)
+ *     return solution_cnt
  */
   __pyx_tuple__4 = PyTuple_Pack(2, __pyx_slice__2, __pyx_slice__2); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 42, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
@@ -7478,111 +7452,27 @@ static void __Pyx_ReleaseBuffer(Py_buffer *view) {
 #endif
 
 
-  /* Print */
-  #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
-static PyObject *__Pyx_GetStdout(void) {
-    PyObject *f = PySys_GetObject((char *)"stdout");
-    if (!f) {
-        PyErr_SetString(PyExc_RuntimeError, "lost sys.stdout");
+  /* CIntFromPyVerify */
+  #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
+#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
+    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
+#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
+    {\
+        func_type value = func_value;\
+        if (sizeof(target_type) < sizeof(func_type)) {\
+            if (unlikely(value != (func_type) (target_type) value)) {\
+                func_type zero = 0;\
+                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
+                    return (target_type) -1;\
+                if (is_unsigned && unlikely(value < zero))\
+                    goto raise_neg_overflow;\
+                else\
+                    goto raise_overflow;\
+            }\
+        }\
+        return (target_type) value;\
     }
-    return f;
-}
-static int __Pyx_Print(PyObject* f, PyObject *arg_tuple, int newline) {
-    int i;
-    if (!f) {
-        if (!(f = __Pyx_GetStdout()))
-            return -1;
-    }
-    Py_INCREF(f);
-    for (i=0; i < PyTuple_GET_SIZE(arg_tuple); i++) {
-        PyObject* v;
-        if (PyFile_SoftSpace(f, 1)) {
-            if (PyFile_WriteString(" ", f) < 0)
-                goto error;
-        }
-        v = PyTuple_GET_ITEM(arg_tuple, i);
-        if (PyFile_WriteObject(v, f, Py_PRINT_RAW) < 0)
-            goto error;
-        if (PyString_Check(v)) {
-            char *s = PyString_AsString(v);
-            Py_ssize_t len = PyString_Size(v);
-            if (len > 0) {
-                switch (s[len-1]) {
-                    case ' ': break;
-                    case '\f': case '\r': case '\n': case '\t': case '\v':
-                        PyFile_SoftSpace(f, 0);
-                        break;
-                    default:  break;
-                }
-            }
-        }
-    }
-    if (newline) {
-        if (PyFile_WriteString("\n", f) < 0)
-            goto error;
-        PyFile_SoftSpace(f, 0);
-    }
-    Py_DECREF(f);
-    return 0;
-error:
-    Py_DECREF(f);
-    return -1;
-}
-#else
-static int __Pyx_Print(PyObject* stream, PyObject *arg_tuple, int newline) {
-    PyObject* kwargs = 0;
-    PyObject* result = 0;
-    PyObject* end_string;
-    if (unlikely(!__pyx_print)) {
-        __pyx_print = PyObject_GetAttr(__pyx_b, __pyx_n_s_print);
-        if (!__pyx_print)
-            return -1;
-    }
-    if (stream) {
-        kwargs = PyDict_New();
-        if (unlikely(!kwargs))
-            return -1;
-        if (unlikely(PyDict_SetItem(kwargs, __pyx_n_s_file, stream) < 0))
-            goto bad;
-        if (!newline) {
-            end_string = PyUnicode_FromStringAndSize(" ", 1);
-            if (unlikely(!end_string))
-                goto bad;
-            if (PyDict_SetItem(kwargs, __pyx_n_s_end, end_string) < 0) {
-                Py_DECREF(end_string);
-                goto bad;
-            }
-            Py_DECREF(end_string);
-        }
-    } else if (!newline) {
-        if (unlikely(!__pyx_print_kwargs)) {
-            __pyx_print_kwargs = PyDict_New();
-            if (unlikely(!__pyx_print_kwargs))
-                return -1;
-            end_string = PyUnicode_FromStringAndSize(" ", 1);
-            if (unlikely(!end_string))
-                return -1;
-            if (PyDict_SetItem(__pyx_print_kwargs, __pyx_n_s_end, end_string) < 0) {
-                Py_DECREF(end_string);
-                return -1;
-            }
-            Py_DECREF(end_string);
-        }
-        kwargs = __pyx_print_kwargs;
-    }
-    result = PyObject_Call(__pyx_print, arg_tuple, kwargs);
-    if (unlikely(kwargs) && (kwargs != __pyx_print_kwargs))
-        Py_DECREF(kwargs);
-    if (!result)
-        return -1;
-    Py_DECREF(result);
-    return 0;
-bad:
-    if (kwargs != __pyx_print_kwargs)
-        Py_XDECREF(kwargs);
-    return -1;
-}
-#endif
 
 /* CIntToPy */
   static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
@@ -7923,28 +7813,6 @@ bad:
     #endif
 #endif
 
-/* CIntFromPyVerify */
-  #define __PYX_VERIFY_RETURN_INT(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 0)
-#define __PYX_VERIFY_RETURN_INT_EXC(target_type, func_type, func_value)\
-    __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, 1)
-#define __PYX__VERIFY_RETURN_INT(target_type, func_type, func_value, exc)\
-    {\
-        func_type value = func_value;\
-        if (sizeof(target_type) < sizeof(func_type)) {\
-            if (unlikely(value != (func_type) (target_type) value)) {\
-                func_type zero = 0;\
-                if (exc && unlikely(value == (func_type)-1 && PyErr_Occurred()))\
-                    return (target_type) -1;\
-                if (is_unsigned && unlikely(value < zero))\
-                    goto raise_neg_overflow;\
-                else\
-                    goto raise_overflow;\
-            }\
-        }\
-        return (target_type) value;\
-    }
-
 /* CIntToPy */
   static CYTHON_INLINE PyObject* __Pyx_PyInt_From_enum__NPY_TYPES(enum NPY_TYPES value) {
     const enum NPY_TYPES neg_one = (enum NPY_TYPES) ((enum NPY_TYPES) 0 - (enum NPY_TYPES) 1), const_zero = (enum NPY_TYPES) 0;
@@ -7975,43 +7843,6 @@ bad:
                                      little, !is_unsigned);
     }
 }
-
-/* PrintOne */
-  #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION < 3
-static int __Pyx_PrintOne(PyObject* f, PyObject *o) {
-    if (!f) {
-        if (!(f = __Pyx_GetStdout()))
-            return -1;
-    }
-    Py_INCREF(f);
-    if (PyFile_SoftSpace(f, 0)) {
-        if (PyFile_WriteString(" ", f) < 0)
-            goto error;
-    }
-    if (PyFile_WriteObject(o, f, Py_PRINT_RAW) < 0)
-        goto error;
-    if (PyFile_WriteString("\n", f) < 0)
-        goto error;
-    Py_DECREF(f);
-    return 0;
-error:
-    Py_DECREF(f);
-    return -1;
-    /* the line below is just to avoid C compiler
-     * warnings about unused functions */
-    return __Pyx_Print(f, NULL, 0);
-}
-#else
-static int __Pyx_PrintOne(PyObject* stream, PyObject *o) {
-    int res;
-    PyObject* arg_tuple = PyTuple_Pack(1, o);
-    if (unlikely(!arg_tuple))
-        return -1;
-    res = __Pyx_Print(stream, arg_tuple, 1);
-    Py_DECREF(arg_tuple);
-    return res;
-}
-#endif
 
 /* CIntFromPy */
   static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *x) {

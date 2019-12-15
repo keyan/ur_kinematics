@@ -3,8 +3,8 @@ cimport numpy as np
 
 
 cdef extern from "ur_kin.h" namespace "ur_kinematics":
-    void forward(const double*, double*)
-    int inverse(const double*, double*, double)
+    void forward(const double*, double*, int)
+    int inverse(const double*, double*, double, int)
 
 
 cpdef ur_forward(ur_type, joints, pose):
@@ -18,7 +18,7 @@ cpdef ur_forward(ur_type, joints, pose):
         np.ndarray[double, ndim=1, mode='c'] T = np.ascontiguousarray(
             np.zeros((16,)), dtype=np.float)
 
-    forward(&q[0], &T[0])
+    forward(&q[0], &T[0], ur_type)
 
     pose[:] = T
 
@@ -38,7 +38,7 @@ cpdef ur_inverse(ur_type, T, q_sols, q6_des):
         np.ndarray[double, ndim=2, mode='c'] solutions = np.ascontiguousarray(
             np.zeros((8, 6)), dtype=np.float)
 
-    solution_cnt = inverse(&pose[0], &solutions[0, 0], 0)
+    solution_cnt = inverse(&pose[0], &solutions[0, 0], 0, ur_type)
     q_sols[:, :] = solutions
 
     return solution_cnt

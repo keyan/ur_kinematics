@@ -9,30 +9,31 @@ UR5 = 1
 UR10 = 2
 
 class TestForwardSinglePose:
-    # def test_ur3(self):
-    #     expected_pose = np.array([
-    #         [0., 1., -0., 0.4569],
-    #         [0., 0., 0.19425],
-    #         [0., 0., 0., 1.],
-    #     ])
+    def test_ur3(self):
+        expected_pose = np.array([
+            0., 1., -0., 0.4569,
+            1., 0., 0., 0.19425,
+            0., 0., -1., 0.06655,
+            0., 0., 0., 1.,
+        ])
 
-    #     pose_solution = np.zeros((4,4))
-    #     ur_forward(ur_type=UR3, joints=np.zeros((6,1)), pose=pose_solution)
+        pose_solution = np.zeros((16,), dtype=np.float)
+        ur_forward(ur_type=UR3, joints=np.zeros((6,)), pose=pose_solution)
 
-    #     assert np.array_equal(pose_solution, expected_pose)
+        assert np.allclose(pose_solution, expected_pose, atol=1e-16)
 
-    # def test_ur5(self):
-    #     expected_pose = np.array([
-    #         [0., 1., -0., 0.81725],
-    #         [1., 0., 0., 0.19145],
-    #         [0., 0., -1., -0.005491],
-    #         [0., 0., 0., 1.],
-    #     ])
+    def test_ur5(self):
+        expected_pose = np.array([
+            0., 1., -0., 0.81725,
+            1., 0., 0., 0.19145,
+            0., 0., -1., -0.005491,
+            0., 0., 0., 1.,
+        ])
 
-    #     pose_solution = np.zeros((4,4))
-    #     ur_forward(ur_type=UR5, joints=np.zeros((6,1)), pose=pose_solution)
+        pose_solution = np.zeros((16,), dtype=np.float)
+        ur_forward(ur_type=UR5, joints=np.zeros((6,)), pose=pose_solution)
 
-    #     assert np.array_equal(pose_solution, expected_pose)
+        assert np.allclose(pose_solution, expected_pose, atol=1e-16)
 
     def test_ur10(self):
         expected_pose = np.array([
@@ -45,37 +46,54 @@ class TestForwardSinglePose:
         pose_solution = np.zeros((16,), dtype=np.float)
         ur_forward(ur_type=UR10, joints=np.zeros((6,)), pose=pose_solution)
 
-        assert np.array_equal(pose_solution, expected_pose)
+        assert np.allclose(pose_solution, expected_pose, atol=1e-16)
 
 
 class TestInverseSinglePose:
-    # def test_ur3(self):
-    #     expected_pose = np.array([
-    #         [0., 1., -0., 0.4569],
-    #         [0., 0., 0.19425],
-    #         [0., 0., 0., 1.],
-    #     ])
+    """
+    Input pose and expected solutions from compiling/executing ur_kin.cpp directly.
 
-    #     pose_solution = np.zeros((4,4))
-    #     ur_forward(ur_type=UR3, joint=np.zeros((6,1)), pose=pose_solution)
+    Absolute float comparison discrepancy tolerance is fairly high because there is
+    rounding when printing values in cpp.
+    """
+    def test_ur3(self):
+        pose = np.array([
+            0.455, 0.292, -0.841, 0.866,
+            0.540, -0.841, 0.000, 0.214,
+            -0.708, -0.455 -0.540, -0.482,
+            0.000, 0.000, 0.000, 1.000,
+        ])
+        ik_solutions = np.zeros((8, 6))
 
-    #     assert pose_solution == expected_pose
+        solution_cnt = ur_inverse(ur_type=UR3, T=pose, q_sols=ik_solutions, q6_des=0)
 
-    # def test_ur5(self):
-    #     expected_pose = np.array([
-    #         [0., 1., -0., 0.81725],
-    #         [1., 0., 0., 0.19145],
-    #         [0., 0., -1., -0.005491],
-    #         [0., 0., 0., 1.],
-    #     ])
+        assert solution_cnt == 0
 
-    #     pose_solution = np.zeros((4,4))
-    #     ur_forward(ur_type=UR5, joint=np.zeros((6,1)), pose=pose_solution)
+    def test_ur5(self):
+        pose = np.array([
+            0.455, 0.292, -0.841, 0.866,
+            0.540, -0.841, 0.000, 0.214,
+            -0.708, -0.455 -0.540, -0.482,
+            0.000, 0.000, 0.000, 1.000,
+        ])
+        expected_solutions = np.array([
+            [0.072434, 6.048854, 0.716044, 3.749918, 5.242530, 3.212253],
+            [0.072434, 0.451729, 5.567141, 4.495947, 5.242530, 3.212253],
+            [3.472871, 2.694025, 0.657568, 5.100964, 1.941905, 3.439697],
+            [3.472871, 3.324251, 5.625618, 5.785873, 1.941905, 3.439697],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+        ])
+        ik_solutions = np.zeros((8, 6))
 
-    #     assert pose_solution == expected_pose
+        solution_cnt = ur_inverse(ur_type=UR5, T=pose, q_sols=ik_solutions, q6_des=0)
+
+        assert solution_cnt == 4
+        assert np.allclose(ik_solutions, expected_solutions, atol=1e-6)
 
     def test_ur10(self):
-        # Input pose and expected solutions from compiling/executing ur_kin.cpp directly.
         pose = np.array([
             0.455, 0.292, -0.841, 0.866,
             0.540, -0.841, 0.000, 0.214,

@@ -10,39 +10,51 @@ namespace ur_kinematics {
       return (x > 0) - (x < 0);
     }
     const double PI = M_PI;
-
-    #define UR10_PARAMS
-    #ifdef UR10_PARAMS
-    const double d1 =  0.1273;
-    const double a2 = -0.612;
-    const double a3 = -0.5723;
-    const double d4 =  0.163941;
-    const double d5 =  0.1157;
-    const double d6 =  0.0922;
-    #endif
-
-    //#define UR5_PARAMS
-    #ifdef UR5_PARAMS
-    const double d1 =  0.089159;
-    const double a2 = -0.42500;
-    const double a3 = -0.39225;
-    const double d4 =  0.10915;
-    const double d5 =  0.09465;
-    const double d6 =  0.0823;
-    #endif
-
-    //#define UR3_PARAMS
-    #ifdef UR3_PARAMS
-    const double d1 =  0.1519;
-    const double a2 = -0.24365;
-    const double a3 = -0.21325;
-    const double d4 =  0.11235;
-    const double d5 =  0.08535;
-    const double d6 =  0.0819;
-    #endif
   }
 
-  void forward(const double* q, double* T) {
+  enum URType {UR3, UR5, UR10};
+
+  struct URParams {
+    URParams(double d1, double a2, double a3, double d4, double d5, double d6)
+      : d1(d1)
+      , a2(a2)
+      , a3(a3)
+      , d4(d4)
+      , d5(d5)
+      , d6(d6) {}
+
+    double d1;
+    double a2;
+    double a3;
+    double d4;
+    double d5;
+    double d6;
+  };
+
+  URParams ur3_params = URParams(0.1519, -0.24365, -0.21325, 0.11235, 0.08535, 0.0819);
+  URParams ur5_params = URParams(0.089159, -0.42500, -0.39225, 0.10915, 0.09465, 0.0823);
+  URParams ur10_params = URParams(0.1273, -0.612, -0.5723, 0.163941, 0.1157, 0.0922);
+
+  // Each UR model uses different parameters for calculation
+  URParams* get_ur_params(int ur_type) {
+    if (ur_type == UR3) {
+      return &ur3_params;
+    } else if (ur_type == UR5) {
+      return &ur5_params;
+    } else {
+      return &ur10_params;
+    }
+  }
+
+  void forward(const double* q, double* T, int ur_type) {
+    URParams* p = get_ur_params(ur_type);
+    const double d1 = p->d1;
+    const double a2 = p->a2;
+    const double a3 = p->a3;
+    const double d4 = p->d4;
+    const double d5 = p->d5;
+    const double d6 = p->d6;
+
     double s1 = sin(*q), c1 = cos(*q); q++;
     double q234 = *q, s2 = sin(*q), c2 = cos(*q); q++;
     double s3 = sin(*q), c3 = cos(*q); q234 += *q; q++;
@@ -74,133 +86,15 @@ namespace ur_kinematics {
     *T = 0.0; T++; *T = 0.0; T++; *T = 0.0; T++; *T = 1.0;
   }
 
-  void forward_all(const double* q, double* T1, double* T2, double* T3,
-                                    double* T4, double* T5, double* T6) {
-    double s1 = sin(*q), c1 = cos(*q); q++; // q1
-    double q23 = *q, q234 = *q, s2 = sin(*q), c2 = cos(*q); q++; // q2
-    double s3 = sin(*q), c3 = cos(*q); q23 += *q; q234 += *q; q++; // q3
-    q234 += *q; q++; // q4
-    double s5 = sin(*q), c5 = cos(*q); q++; // q5
-    double s6 = sin(*q), c6 = cos(*q); // q6
-    double s23 = sin(q23), c23 = cos(q23);
-    double s234 = sin(q234), c234 = cos(q234);
+  int inverse(const double* T, double* q_sols, double q6_des, int ur_type) {
+    URParams* p = get_ur_params(ur_type);
+    const double d1 = p->d1;
+    const double a2 = p->a2;
+    const double a3 = p->a3;
+    const double d4 = p->d4;
+    const double d5 = p->d5;
+    const double d6 = p->d6;
 
-    if(T1 != NULL) {
-      *T1 = c1; T1++;
-      *T1 = 0; T1++;
-      *T1 = s1; T1++;
-      *T1 = 0; T1++;
-      *T1 = s1; T1++;
-      *T1 = 0; T1++;
-      *T1 = -c1; T1++;
-      *T1 = 0; T1++;
-      *T1 =       0; T1++;
-      *T1 = 1; T1++;
-      *T1 = 0; T1++;
-      *T1 =d1; T1++;
-      *T1 =       0; T1++;
-      *T1 = 0; T1++;
-      *T1 = 0; T1++;
-      *T1 = 1; T1++;
-    }
-
-    if(T2 != NULL) {
-      *T2 = c1*c2; T2++;
-      *T2 = -c1*s2; T2++;
-      *T2 = s1; T2++;
-      *T2 =a2*c1*c2; T2++;
-      *T2 = c2*s1; T2++;
-      *T2 = -s1*s2; T2++;
-      *T2 = -c1; T2++;
-      *T2 =a2*c2*s1; T2++;
-      *T2 =         s2; T2++;
-      *T2 = c2; T2++;
-      *T2 = 0; T2++;
-      *T2 =   d1 + a2*s2; T2++;
-      *T2 =               0; T2++;
-      *T2 = 0; T2++;
-      *T2 = 0; T2++;
-      *T2 =                 1; T2++;
-    }
-
-    if(T3 != NULL) {
-      *T3 = c23*c1; T3++;
-      *T3 = -s23*c1; T3++;
-      *T3 = s1; T3++;
-      *T3 =c1*(a3*c23 + a2*c2); T3++;
-      *T3 = c23*s1; T3++;
-      *T3 = -s23*s1; T3++;
-      *T3 = -c1; T3++;
-      *T3 =s1*(a3*c23 + a2*c2); T3++;
-      *T3 =         s23; T3++;
-      *T3 = c23; T3++;
-      *T3 = 0; T3++;
-      *T3 =     d1 + a3*s23 + a2*s2; T3++;
-      *T3 =                    0; T3++;
-      *T3 = 0; T3++;
-      *T3 = 0; T3++;
-      *T3 =                                     1; T3++;
-    }
-
-    if(T4 != NULL) {
-      *T4 = c234*c1; T4++;
-      *T4 = s1; T4++;
-      *T4 = s234*c1; T4++;
-      *T4 =c1*(a3*c23 + a2*c2) + d4*s1; T4++;
-      *T4 = c234*s1; T4++;
-      *T4 = -c1; T4++;
-      *T4 = s234*s1; T4++;
-      *T4 =s1*(a3*c23 + a2*c2) - d4*c1; T4++;
-      *T4 =         s234; T4++;
-      *T4 = 0; T4++;
-      *T4 = -c234; T4++;
-      *T4 =                  d1 + a3*s23 + a2*s2; T4++;
-      *T4 =                         0; T4++;
-      *T4 = 0; T4++;
-      *T4 = 0; T4++;
-      *T4 =                                                  1; T4++;
-    }
-
-    if(T5 != NULL) {
-      *T5 = s1*s5 + c234*c1*c5; T5++;
-      *T5 = -s234*c1; T5++;
-      *T5 = c5*s1 - c234*c1*s5; T5++;
-      *T5 =c1*(a3*c23 + a2*c2) + d4*s1 + d5*s234*c1; T5++;
-      *T5 = c234*c5*s1 - c1*s5; T5++;
-      *T5 = -s234*s1; T5++;
-      *T5 = - c1*c5 - c234*s1*s5; T5++;
-      *T5 =s1*(a3*c23 + a2*c2) - d4*c1 + d5*s234*s1; T5++;
-      *T5 =                           s234*c5; T5++;
-      *T5 = c234; T5++;
-      *T5 = -s234*s5; T5++;
-      *T5 =                          d1 + a3*s23 + a2*s2 - d5*c234; T5++;
-      *T5 =                                                   0; T5++;
-      *T5 = 0; T5++;
-      *T5 = 0; T5++;
-      *T5 =                                                                                 1; T5++;
-    }
-
-    if(T6 != NULL) {
-      *T6 =   c6*(s1*s5 + c234*c1*c5) - s234*c1*s6; T6++;
-      *T6 = - s6*(s1*s5 + c234*c1*c5) - s234*c1*c6; T6++;
-      *T6 = c5*s1 - c234*c1*s5; T6++;
-      *T6 =d6*(c5*s1 - c234*c1*s5) + c1*(a3*c23 + a2*c2) + d4*s1 + d5*s234*c1; T6++;
-      *T6 = - c6*(c1*s5 - c234*c5*s1) - s234*s1*s6; T6++;
-      *T6 = s6*(c1*s5 - c234*c5*s1) - s234*c6*s1; T6++;
-      *T6 = - c1*c5 - c234*s1*s5; T6++;
-      *T6 =s1*(a3*c23 + a2*c2) - d4*c1 - d6*(c1*c5 + c234*s1*s5) + d5*s234*s1; T6++;
-      *T6 =                                       c234*s6 + s234*c5*c6; T6++;
-      *T6 = c234*c6 - s234*c5*s6; T6++;
-      *T6 = -s234*s5; T6++;
-      *T6 =                                                      d1 + a3*s23 + a2*s2 - d5*c234 - d6*s234*s5; T6++;
-      *T6 =                                                                                                   0; T6++;
-      *T6 = 0; T6++;
-      *T6 = 0; T6++;
-      *T6 =                                                                                                                                            1; T6++;
-    }
-  }
-
-  int inverse(const double* T, double* q_sols, double q6_des) {
     int num_sols = 0;
     double T02 = -*T; T++; double T00 =  *T; T++; double T01 =  *T; T++; double T03 = -*T; T++;
     double T12 = -*T; T++; double T10 =  *T; T++; double T11 =  *T; T++; double T13 = -*T; T++;
@@ -356,7 +250,7 @@ int main(int argc, char* argv[])
 {
   double q[6] = {0.0, 0.0, 1.0, 0.0, 1.0, 0.0};
   double* T = new double[16];
-  forward(q, T);
+  forward(q, T, UR10);
   for(int i=0;i<4;i++) {
     for(int j=i*4;j<(i+1)*4;j++)
       printf("%1.3f ", T[j]);
@@ -364,7 +258,7 @@ int main(int argc, char* argv[])
   }
   double q_sols[8*6];
   int num_sols;
-  num_sols = inverse(T, q_sols, 0);
+  num_sols = inverse(T, q_sols, 0, UR10);
   printf("Number of solutions: %i\n", num_sols);
   for(int i=0;i<num_sols;i++)
     printf("%1.6f %1.6f %1.6f %1.6f %1.6f %1.6f\n",
